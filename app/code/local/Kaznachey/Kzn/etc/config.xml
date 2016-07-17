@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<config>
+<modules>
+    <Kaznachey_Kzn>
+        <version>1.0.0</version>
+    </Kaznachey_Kzn>
+</modules>
+<global>
+    <models>
+        <kaznachey>
+            <class>Kaznachey_Kzn_Model</class><!-- Тут у нас лежат модели -->
+        </kaznachey>
+    </models>
+    <blocks>
+        <kaznachey>
+            <class>Kaznachey_Kzn_Block</class><!-- Наши блоки -->
+        </kaznachey>
+    </blocks>
+    <helpers>
+        <kaznachey>
+            <class>Kaznachey_Kzn_Helper</class><!-- И helper для переводов -->
+        </kaznachey>
+    </helpers>
+</global>
+<frontend>
+    <routers>
+        <kaznachey>
+            <use>standard</use>
+            <args>
+                <module>Kaznachey_Kzn</module>
+                <frontName>Kaznachey</frontName>
+            </args>
+        </kaznachey>
+    </routers>
+</frontend>
+<default>
+        <payment>
+            <kaznachey_redirect>
+                <model>kaznachey/redirect</model>
+                <active>1</active>
+                <title>Kaznachey</title>
+                <validitytime>140</validitytime>
+                <sort_order>0</sort_order>
+            </kaznachey_redirect>
+        </payment>
+</default>
+</config>

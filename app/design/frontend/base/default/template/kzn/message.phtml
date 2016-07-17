@@ -1,0 +1,51 @@
+<ul id="payment_form_<?php echo $this->getMethodCode() ?>" style="display:none" class="form-list">
+    <li>
+    <?php
+	$conf_arr = $this->getForm();
+	$merch_guid = $conf_arr['merch_guid'];
+	$merch_secret_key = $conf_arr['merch_secret_key'];
+	
+	function sendRequestKaznachey($url,$data)
+	{
+		$curl =curl_init();
+		
+		if (!$curl) return false;
+		
+		curl_setopt($curl, CURLOPT_URL,$url );
+		curl_setopt($curl, CURLOPT_POST,true);
+		curl_setopt($curl, CURLOPT_HTTPHEADER,array("Expect: ","Content-Type: application/json; charset=UTF-8",'Content-Length: '. strlen($data)));
+		curl_setopt($curl, CURLOPT_POSTFIELDS,$data);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER,True);
+		$res =  curl_exec($curl);
+		curl_close($curl);
+		return $res;
+	}
+	
+	$requestMerchantInfo = Array("MerchantGuid"=>$merch_guid, "Signature"=>md5($merch_guid.$merch_secret_key));
+	
+	$resMerchantInfo = json_decode(sendRequestKaznachey('http://payment.kaznachey.net/api/PaymentInterface/GetMerchantInformation', json_encode($requestMerchantInfo)),true);
+
+	foreach ($resMerchantInfo['PaySystems'] as $key=>$system)
+	{
+		echo "<input type='radio' name='SelectedPaySystemId' value='$system[Id]' >$system[PaySystemName]<br />";
+	}
+	echo "<br /><input type='checkbox' name='confirm' checked> Согласен с <a href='$resMerchantInfo[TermToUse]'>условиями использования</a><br />";
+	//echo '<input type="hidden" name="order_id" value="'.$order_id.'">';
+	
+	?>
+    </li>
+<script>
+window.onclick = function onclickRadio() {
+  var nameRadio = document.getElementsByName('SelectedPaySystemId');
+  for (var i = 0; i < nameRadio.length; i++) {
+    if (nameRadio[i].type === 'radio' && nameRadio[i].checked) {
+        rezultatRadio = nameRadio[i].value;       
+    }
+  }
+  var expire = new Date();
+  var today = new Date();
+  expire.setTime(today.getTime() + 3600000*24*30);
+  document.cookie="SelectedPaySystemId="+rezultatRadio+"; path=/; expires="+expire.toGMTString();
+}
+</script>
+</ul>
